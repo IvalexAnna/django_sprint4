@@ -1,0 +1,3 @@
+MAX_LENGTH: int = 256
+CAT_LENGTH: int = 64
+POSTS_COUNT: int = 5
