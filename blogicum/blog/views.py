@@ -5,15 +5,15 @@ from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 
 from . import const
-from .models import Category, Post
+from .models import Category, Post, Comment
 from .forms import PostForm
+from .forms import CommentForm
 
 
 User = get_user_model()
 
 
 def get_posts():
-    print(timezone.now())
     return Post.objects.filter(
         pub_date__lte=timezone.now(),
         is_published=True,
@@ -35,7 +35,18 @@ def index(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(get_posts(), pk=pk)
-    return render(request, "blog/detail.html", {"post": post})
+    comments = Comment.objects.filter(post_id=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('blog:post_detail', pk=pk)
+    else:
+        form = CommentForm()
+    return render(request, "blog/detail.html", {"post": post, "form": form, "comments": comments})
 
 
 def category_posts(request, category_slug):
@@ -80,3 +91,69 @@ def profile(request, username):
         'page_obj': page_obj,
         'is_owner': is_owner,
     })
+
+
+@login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('blog:post_detail', pk=post_id)
+    else: 
+        form = CommentForm()
+    return render(request, 'blog/detail.html', {'form': form})
+
+@login_required
+def edit_comment(request, post_id, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id, post_id=post_id, author=request.user)
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect('blog:post_detail', pk=post_id)
+    else:
+        form = CommentForm(instance=comment)
+    comments = Comment.objects.filter(post_id=post_id)
+    post = get_object_or_404(get_posts(), pk=post_id)
+    return render(request, 'blog/detail.html', {'post': post, 'form': form, "comments": comments, 'comment': comment})
+
+
+@login_required
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    comments = Comment.objects.filter(post_id=post_id)
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('blog:post_detail', pk=post_id)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'blog/detail.html', {'post': post, "form": form, "comments": comments})
+
+
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('blog:post_detail')
+    return render(request, 'blog/detail.html', {'post': post})
+
+
+@login_required
+def delete_comment(request, post_id, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id, post_id=post_id, author=request.user)
+    if request.method == 'GET':
+        comment.delete()
+        return redirect('blog:post_detail', pk=post_id)
+    comments = Comment.objects.filter(post_id=post_id)
+    post = get_object_or_404(get_posts(), pk=post_id)
+    form = PostForm(instance=post)
+    return render(request, 'blog/detail.html', {'post': post, 'form': form, "comments": comments})

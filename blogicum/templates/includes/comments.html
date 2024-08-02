@@ -1,7 +1,12 @@
 {% if user.is_authenticated %}
   {% load django_bootstrap5 %}
+  {% if "/edit_comment/" in request.path and comment.id%}
+  <h5 class="mb-4">Редактировать комментарий</h5>
+  <form method="post" action="{% url 'blog:edit_comment' post.id comment.id %}">
+  {% else %}
   <h5 class="mb-4">Оставить комментарий</h5>
   <form method="post" action="{% url 'blog:add_comment' post.id %}">
+  {% endif %}
     {% csrf_token %}
     {% bootstrap_form form %}
     {% bootstrap_button button_type="submit" content="Отправить" %}
