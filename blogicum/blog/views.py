@@ -3,11 +3,11 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
+from django.db.models import Count
 
 from . import const
-from .models import Category, Post, Comment
-from .forms import PostForm
-from .forms import CommentForm
+from .models import Category, Post, Comment, User
+from .forms import PostForm, EditProfileForm, CommentForm, DeletePostForm
 
 
 User = get_user_model()
@@ -26,7 +26,7 @@ def get_categories():
 
 
 def index(request):
-    posts = get_posts()
+    posts = get_posts().annotate(comment_count=Count('comments')).order_by('-pub_date')
     paginator = Paginator(posts, 10)
     num_pages = request.GET.get('page')
     page_obj = paginator.get_page(num_pages)
@@ -34,7 +34,7 @@ def index(request):
 
 
 def post_detail(request, pk):
-    post = get_object_or_404(get_posts(), pk=pk)
+    post = get_object_or_404(get_posts().annotate(comment_count=Count('comments')), pk=pk)
     comments = Comment.objects.filter(post_id=pk)
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -50,9 +50,9 @@ def post_detail(request, pk):
 
 
 def category_posts(request, category_slug):
-    category = get_object_or_404(get_categories(), slug=category_slug)
+    category = get_object_or_404(get_categories() , slug=category_slug)
     posts = category.posts.filter(pub_date__lte=timezone.now(),
-                                  is_published=True)
+                                  is_published=True).annotate(comment_count=Count('comments')).order_by('-pub_date')
     paginator = Paginator(posts, 10)
     num_pages = request.GET.get('page')
     page_obj = paginator.get_page(num_pages)
@@ -79,23 +79,35 @@ def create_post(request):
 
 
 def profile(request, username):
-    user = get_object_or_404(User, username=username)
-    posts = Post.objects.filter(author=user)
-    is_owner = request.user == user
+    profile = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(author=profile).annotate(comment_count=Count('comments')).order_by('-pub_date')
+    is_owner = request.user == profile
     paginator = Paginator(posts, 10)
     num_pages = request.GET.get('page')
     page_obj = paginator.get_page(num_pages)
 
-    return render(request, 'blog/profile.html', {
-        'profile_user': user,
+    return render(request, 'blog/profile.html',  {
+        'profile': profile,
+        'user': request.user,
         'page_obj': page_obj,
         'is_owner': is_owner,
     })
 
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('blog:profile', username=request.user.username)
+    else:
+        form = EditProfileForm(instance=request.user)
+    return render(request, 'blog/user.html', {'form': form})
 
 @login_required
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    comments = Comment.objects.filter(post_id=post_id)
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -106,7 +118,7 @@ def add_comment(request, post_id):
             return redirect('blog:post_detail', pk=post_id)
     else: 
         form = CommentForm()
-    return render(request, 'blog/detail.html', {'form': form})
+    return render(request, 'blog/detail.html', {'post': post,'form': form, "comments": comments})
 
 @login_required
 def edit_comment(request, post_id, comment_id):
@@ -137,14 +149,20 @@ def edit_post(request, post_id):
     return render(request, 'blog/detail.html', {'post': post, "form": form, "comments": comments})
 
 
-
 @login_required
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id, author=request.user)
+    #form = PostForm(instance=post)
+    comments = Comment.objects.filter(post_id=post_id)
     if request.method == 'POST':
-        post.delete()
-        return redirect('blog:post_detail')
-    return render(request, 'blog/detail.html', {'post': post})
+        delete_form = DeletePostForm(request.POST)
+        if delete_form.is_valid() and delete_form.cleaned_data['confirm']:
+            post.delete()
+            return redirect('blog:index')
+    else:
+        delete_form = DeletePostForm()
+    return render(request, 'blog/detail.html', {'post': post, 'delete_form': delete_form, 'comments': comments})
+
 
 
 @login_required

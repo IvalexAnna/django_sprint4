@@ -57,8 +57,10 @@ class Post(CommonInfo):
         verbose_name="Категория",
         related_name="posts",
     )
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Добавлено")
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default='draft')
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Добавлено")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
     image = models.ImageField(upload_to="post_images/", blank=True, null=True)
 
@@ -104,8 +106,10 @@ class Location(CommonInfo):
     def __str__(self):
         return self.name
 
+
 class Comment(models.Model):
-    post = models.ForeignKey('blog.Post', on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(
+        'blog.Post', on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
@@ -113,3 +117,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.author.username} on {self.post.title}'
+    

@@ -35,8 +35,20 @@
               Удалить публикацию
             </a>
           </div>
+          {% if  'delete' in request.path %}
+          <h2>Подтвердите удаление публикации</h2>
+          <p>Вы уверены, что хотите удалить публикацию "{{ post.title }}"?</p>
+          <form method="post">
+            {% csrf_token %}
+            {{ delete_form.as_p }}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'blog:post_detail' post.id %}" class="btn btn-secondary">Отмена</a>
+          </form>
         {% endif %}
+        {% endif %}
+        {% if  'delete' not in request.path %}
         {% include "includes/comments.html" %}
+        {% endif %}
       </div>
     </div>
   </div>

@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-^src(h-g%3!(m8%j+vc^_n_e8u@+c2e6uu)s6)^=t=(nx4ys)-"
@@ -17,6 +16,9 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
+#AUTHENTICATION_BACKENDS = [
+#    'django.contrib.auth.backends.ModelBackend',
+#]
 
 INSTALLED_APPS = [
     "blog.apps.BlogConfig",
@@ -43,12 +45,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "blogicum.urls"
 
-TEMPLATES_DIRS = BASE_DIR / "templates"
+TEMPLATES_DIR = BASE_DIR / "templates"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [TEMPLATES_DIRS],
+        "DIRS": [TEMPLATES_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -85,7 +87,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = "ru-RU"
 
 TIME_ZONE = "Europe/Moscow"
@@ -95,7 +96,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 STATIC_URL = "/static/"
 

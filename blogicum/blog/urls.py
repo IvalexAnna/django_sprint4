@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import category_posts, index, post_detail, create_post, profile, add_comment, edit_comment, edit_post, delete_post, delete_comment
+from .views import category_posts, index, post_detail, create_post, profile, add_comment, edit_comment, edit_post, delete_post, delete_comment, edit_profile
 
 app_name = "blog"
 
@@ -16,5 +16,6 @@ urlpatterns = [
     path('posts/<int:post_id>/edit_comment/<int:comment_id>/', edit_comment, name='edit_comment'),
     path('posts/<int:post_id>/edit/', edit_post, name="edit_post"),
     path('posts/<int:post_id>/delete', delete_post, name="delete_post"),
-    path('posts/<int:post_id>/delete_comment/<int:comment_id>/', delete_comment, name='delete_comment')
-]
+    path('posts/<int:post_id>/delete_comment/<int:comment_id>/', delete_comment, name='delete_comment'),
+    path('edit_profile/', edit_profile, name='edit_profile'),
+    ]
