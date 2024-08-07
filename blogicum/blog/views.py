@@ -126,7 +126,7 @@ class EditPostView(UserPassesTestMixin, UpdateView):
     def get_object(self):
         post = get_object_or_404(Post, id=self.kwargs['post_id'])
         if post.author != self.request.user:
-            self.handle_no_permission()
+            return None  
         return post
 
     def get_context_data(self, **kwargs):
