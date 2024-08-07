@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.db.models import Count
+from django.db.models import Count, Q
 
 User = get_user_model()
 
@@ -42,14 +42,20 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
 
     def get_object(self):
-        return get_object_or_404(
-            Post.objects.filter(
-                pub_date__lte=timezone.now(),
-                is_published=True,
-                category__is_published=True
-            ),
-            pk=self.kwargs['pk']
-        )
+        queryset = Post.objects.all()
+        if not self.request.user.is_authenticated:
+            queryset = queryset.filter(is_published=True, category__is_published=True)
+        else:
+            queryset = queryset.filter(
+                Q(is_published=True, category__is_published=True) | 
+                Q(author=self.request.user) | 
+                Q(pub_date__gt=timezone.now(), author=self.request.user)
+            )
+        post = get_object_or_404(queryset, pk=self.kwargs['pk'])
+        if post.status > 'Scheduled' and post.author != self.request.user:
+            return redirect('pages:error_404')
+        return post
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
