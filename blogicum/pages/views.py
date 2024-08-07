@@ -1,10 +1,17 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 
+class AboutView(TemplateView):
+    template_name = "pages/about.html"
 
-def about(request):
-    return render(request, "pages/about.html")
+class RulesView(TemplateView):
+    template_name = "pages/rules.html"
 
+class Error404View(TemplateView):
+    template_name = "pages/404.html"
 
-def rules(request):
-    return render(request, "pages/rules.html")
+class Error500View(TemplateView):
+    template_name = "pages/500.html"
+
+class Error403View(TemplateView):
+    template_name = "pages/403csrf.html"
 

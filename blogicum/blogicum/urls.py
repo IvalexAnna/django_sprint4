@@ -14,7 +14,7 @@ urlpatterns = [
     path("pages/", include("pages.urls", namespace="pages")),
     path("profile/", include("blog.urls", namespace="profile")),
     path("", include("blog.urls", namespace="blog")),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('auth/', include('django.contrib.auth.urls')),
     path('auth/registration/', CreateView.as_view(
          template_name='registration/registration_form.html',
          form_class=UserCreationForm,
