@@ -16,10 +16,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-#AUTHENTICATION_BACKENDS = [
-#    'django.contrib.auth.backends.ModelBackend',
-#]
-
 INSTALLED_APPS = [
     "blog.apps.BlogConfig",
     "pages.apps.PagesConfig",
