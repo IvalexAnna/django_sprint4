@@ -1,11 +1,10 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
 from django.views.generic.edit import CreateView
 
-from users.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm
 
 handler404 = "blogicum.views.page_not_found"
 handler500 = "blogicum.views.server_error"
@@ -28,4 +27,5 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

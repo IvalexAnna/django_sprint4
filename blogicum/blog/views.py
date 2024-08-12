@@ -1,4 +1,3 @@
-# from . import const
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -45,7 +44,8 @@ class PostDetailView(DetailView):
     def get_object(self, **kwargs):
         queryset = Post.objects.all()
         if not self.request.user.is_authenticated:
-            queryset = queryset.filter(is_published=True, category__is_published=True)
+            queryset = queryset.filter(is_published=True,
+                                       category__is_published=True)
         else:
             queryset = queryset.filter(
                 Q(author__username=self.request.user.username)
@@ -91,7 +91,8 @@ class CategoryPostListView(ListView):
         category = get_object_or_404(
             Category, slug=self.kwargs["category_slug"], is_published=True
         )
-        return category.posts.filter(pub_date__lte=timezone.now(), is_published=True)
+        return category.posts.filter(pub_date__lte=timezone.now(),
+                                     is_published=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -139,7 +140,9 @@ class EditPostView(UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["id_edit"] = True
-        context["comments"] = Comment.objects.filter(post_id=self.kwargs["post_id"])
+        context["comments"] = Comment.objects.filter(
+            post_id=self.kwargs["post_id"]
+        )
         return context
 
     def form_valid(self, form):
@@ -154,7 +157,8 @@ class DeletePostView(UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         post = get_object_or_404(Post, id=self.kwargs["post_id"])
-        return self.request.user.is_authenticated and post.author == self.request.user
+        return (self.request.user.is_authenticated
+                and post.author == self.request.user)
 
     def handle_no_permission(self):
         return redirect("blog:post_detail", pk=self.kwargs["post_id"])
@@ -166,7 +170,8 @@ class DeletePostView(UserPassesTestMixin, DeleteView):
         return post
 
     def get_success_url(self):
-        return reverse("blog:profile", kwargs={"username": self.request.user.username})
+        return reverse("blog:profile",
+                       kwargs={"username": self.request.user.username})
 
 
 class ProfileView(DetailView):
@@ -239,7 +244,8 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["comments"] = Comment.objects.filter(post_id=self.kwargs["post_id"])
+        context["comments"] = Comment.objects.filter(
+            post_id=self.kwargs["post_id"])
         context["post"] = get_object_or_404(Post, pk=self.kwargs["post_id"])
         return context
 
@@ -264,7 +270,8 @@ class DeleteCommentView(LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["comments"] = Comment.objects.filter(post_id=self.kwargs["post_id"])
+        context["comments"] = Comment.objects.filter(
+            post_id=self.kwargs["post_id"])
         context["post"] = get_object_or_404(Post, pk=self.kwargs["post_id"])
         return context
 
