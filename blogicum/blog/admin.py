@@ -7,9 +7,7 @@ admin.site.empty_value_display = "Не задано"
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("title", "description",
-                    "slug", "is_published",
-                    "created_at")
+    list_display = ("title", "description", "slug", "is_published", "created_at")
     list_editable = ("is_published",)
     search_fields = ("title",)
     list_filter = ("slug",)

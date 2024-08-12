@@ -1,5 +1,5 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -7,13 +7,13 @@ SECRET_KEY = "django-insecure-^src(h-g%3!(m8%j+vc^_n_e8u@+c2e6uu)s6)^=t=(nx4ys)-
 
 DEBUG = True
 
-CSRF_FAILURE_VIEW = 'blogicum.views.csrf_failure'
+CSRF_FAILURE_VIEW = "blogicum.views.csrf_failure"
 
-ROOT_URLCONF = 'blogicum.urls'
+ROOT_URLCONF = "blogicum.urls"
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
+    "localhost",
+    "127.0.0.1",
 ]
 
 INSTALLED_APPS = [
@@ -99,14 +99,14 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 
-EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
-LOGIN_REDIRECT_URL = 'blog:index'
+LOGIN_REDIRECT_URL = "blog:index"
 
-LOGIN_URL = 'login'
+LOGIN_URL = "login"
 
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

@@ -104,6 +104,8 @@ def test_post(
     created_content = response_on_created.content.decode('utf-8')
     img_count = created_content.count('<img')
     expected_img_count = main_content_tester.n_or_page_size(len(created_items))
+    print(img_count)
+    print(expected_img_count)
     assert img_count >= expected_img_count, (
         'Убедитесь, что при создании публикации она отображается с картинкой.'
     )
