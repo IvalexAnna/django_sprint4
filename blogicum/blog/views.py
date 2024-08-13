@@ -31,7 +31,7 @@ class PostListView(ListView):
                 is_published=True,
                 category__is_published=True,
             )
-            .annotate(comment_count=Count("comments"))
+            .annotate(comment_count=Count("comments",filter=Q(comments__is_published=True)))
             .order_by("-pub_date")
         )
 
@@ -62,7 +62,9 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["comments"] = Comment.objects.filter(post_id=self.kwargs["pk"])
+        context["comments"] = Comment.objects.filter(
+            post_id=self.kwargs["pk"], is_published=True
+        )
         if self.request.method == "POST":
             context["form"] = CommentForm(self.request.POST)
         else:
