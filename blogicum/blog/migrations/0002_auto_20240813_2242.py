@@ -6,23 +6,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blog', '0001_initial'),
+        ("blog", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='post_images/'),
+            model_name="post",
+            name="image",
+            field=models.ImageField(blank=True, null=True, upload_to="post_images/"),
         ),
         migrations.AddField(
-            model_name='post',
-            name='status',
-            field=models.CharField(choices=[('draft', 'Draft'), ('published', 'Published'), ('scheduled', 'Scheduled')], default='draft', max_length=10),
+            model_name="post",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("draft", "Draft"),
+                    ("published", "Published"),
+                    ("scheduled", "Scheduled"),
+                ],
+                default="draft",
+                max_length=10,
+            ),
         ),
         migrations.AddField(
-            model_name='post',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, verbose_name='Обновлено'),
+            model_name="post",
+            name="updated_at",
+            field=models.DateTimeField(auto_now=True, verbose_name="Обновлено"),
         ),
     ]

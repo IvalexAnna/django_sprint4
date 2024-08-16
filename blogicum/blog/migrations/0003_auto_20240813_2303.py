@@ -6,17 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blog', '0002_auto_20240813_2242'),
+        ("blog", "0002_auto_20240813_2242"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='comment',
-            options={'verbose_name': 'комментарий', 'verbose_name_plural': 'Комментарии'},
+            name="comment",
+            options={
+                "verbose_name": "комментарий",
+                "verbose_name_plural": "Комментарии",
+            },
         ),
         migrations.AddField(
-            model_name='comment',
-            name='is_published',
-            field=models.BooleanField(default=True, help_text='Снимите галочку, чтобы скрыть публикацию.', verbose_name='Опубликовано'),
+            model_name="comment",
+            name="is_published",
+            field=models.BooleanField(
+                default=True,
+                help_text="Снимите галочку, чтобы скрыть публикацию.",
+                verbose_name="Опубликовано",
+            ),
         ),
     ]

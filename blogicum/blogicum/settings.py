@@ -7,7 +7,7 @@ SECRET_KEY = "django-insecure-^src(h-g%3!(m8%j+vc^_n_e8u@+c2e6uu)s6)^=t=(nx4ys)-
 
 DEBUG = True
 
-CSRF_FAILURE_VIEW = "blogicum.views.csrf_failure"
+CSRF_FAILURE_VIEW = "pages.views.csrf_failure"
 
 ROOT_URLCONF = "blogicum.urls"
 
@@ -17,8 +17,6 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
-    "blog.apps.BlogConfig",
-    "pages.apps.PagesConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -26,6 +24,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_bootstrap5",
+    "blog.apps.BlogConfig",
+    "pages.apps.PagesConfig",
     "users",
 ]
 

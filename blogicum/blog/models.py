@@ -14,28 +14,25 @@ class CommonInfo(models.Model):
         verbose_name="Опубликовано",
         help_text="Снимите галочку, чтобы скрыть публикацию.",
     )
-    created_at = models.DateTimeField(auto_now_add=True,
-                                      verbose_name="Добавлено")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Добавлено")
 
     class Meta:
         abstract = True
 
 
 class Location(CommonInfo):
-    name = models.CharField(max_length=const.MAX_LENGTH,
-                            verbose_name="Название места")
+    name = models.CharField(max_length=const.MAX_LENGTH, verbose_name="Название места")
 
     class Meta:
         verbose_name = "местоположение"
         verbose_name_plural = "Местоположения"
 
     def __str__(self):
-        return self.name[:30] + ('...' if len(self.name) > 30 else '')
+        return self.name[:30] + ("..." if len(self.name) > 30 else "")
 
 
 class Category(CommonInfo):
-    title = models.CharField(max_length=const.MAX_LENGTH,
-                             verbose_name="Заголовок")
+    title = models.CharField(max_length=const.MAX_LENGTH, verbose_name="Заголовок")
     description = models.TextField(verbose_name="Описание")
     slug = models.SlugField(
         max_length=const.CAT_LENGTH,
@@ -52,10 +49,10 @@ class Category(CommonInfo):
         verbose_name_plural = "Категории"
 
     def __str__(self):
-        return self.title[:30] + ('...' if len(self.title) > 30 else '')
+        return self.title[:30] + ("..." if len(self.title) > 30 else "")
 
     def get_absolute_url(self):
-        return reverse('blog:category_posts', kwargs={'category_slug': self.slug})
+        return reverse("blog:category_posts", kwargs={"category_slug": self.slug})
 
 
 class Post(CommonInfo):
@@ -64,8 +61,7 @@ class Post(CommonInfo):
         ("published", "Published"),
         ("scheduled", "Scheduled"),
     )
-    title = models.CharField(max_length=const.MAX_LENGTH,
-                             verbose_name="Заголовок")
+    title = models.CharField(max_length=const.MAX_LENGTH, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Текст")
     pub_date = models.DateTimeField(
         verbose_name="Дата и время публикации",
@@ -94,13 +90,9 @@ class Post(CommonInfo):
         verbose_name="Категория",
         related_name="posts",
     )
-    status = models.CharField(max_length=10,
-                              choices=STATUS_CHOICES,
-                              default="draft")
-    updated_at = models.DateTimeField(auto_now=True,
-                                      verbose_name="Обновлено")
-    image = models.ImageField(upload_to="post_images/",
-                              blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
+    image = models.ImageField(upload_to="post_images/", blank=True, null=True)
 
     class Meta:
         verbose_name = "публикация"
@@ -109,15 +101,14 @@ class Post(CommonInfo):
         default_related_name = "posts"
 
     def __str__(self):
-        return self.title[:30] + ('...' if len(self.title) > 30 else '')
+        return self.title[:30] + ("..." if len(self.title) > 30 else "")
 
     def get_absolute_url(self):
-        return reverse('blog:post_detail', kwargs={'pk': self.pk})
+        return reverse("blog:post_detail", kwargs={"post_id": self.pk})
 
 
 class Comment(CommonInfo):
-    post = models.ForeignKey("Post", on_delete=models.CASCADE,
-                             related_name="comments")
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -127,4 +118,6 @@ class Comment(CommonInfo):
         verbose_name_plural = "Комментарии"
 
     def __str__(self):
-        return f"Comment by {self.author.username} on {self.post.title} text: {self.text}"
+        return (
+            f"Comment by {self.author.username} on {self.post.title} text: {self.text}"
+        )
