@@ -160,17 +160,23 @@ class ProfileView(PostListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs["username"])
-        return (
-            Post.objects.filter(author=user)
-            .annotate(comment_count=Count("comments", filter=Q(comments__is_published=True)))
-            .order_by("-pub_date")
-        )
+        if self.request.user == user:
+            return Post.objects.filter(author=user).annotate(
+                comment_count=Count("comments", filter=Q(comments__is_published=True))
+            ).order_by("-pub_date").select_related()
+        else:
+            return Post.objects.filter(
+                author=user, is_published=True, pub_date__lte=timezone.now()
+            ).annotate(
+                comment_count=Count("comments", filter=Q(comments__is_published=True))
+            ).order_by("-pub_date").select_related()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = get_object_or_404(User, username=self.kwargs["username"])
         context["profile"] = user
         return context
+
 
 
 @method_decorator(login_required, name="dispatch")
@@ -209,6 +215,7 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = "blog/detail.html"
+    
 
     def get_object(self):
         return get_object_or_404(
@@ -227,8 +234,10 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.edited_at = timezone.now()
-        form.save()
-        return redirect("blog:post_detail", post_id=self.kwargs["post_id"])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("blog:post_detail", kwargs={"post_id": self.kwargs["post_id"]})
 
 
 class DeleteCommentView(LoginRequiredMixin, DeleteView):
@@ -250,7 +259,10 @@ class DeleteCommentView(LoginRequiredMixin, DeleteView):
         context["post"] = get_object_or_404(Post, pk=self.kwargs["post_id"])
         return context
 
-    def post(self, request, *args, **kwargs):
-        comment = self.get_object()
-        comment.delete()
-        return redirect("blog:post_detail", post_id=self.kwargs["post_id"])
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse("blog:post_detail", kwargs={"post_id": self.kwargs["post_id"]})
