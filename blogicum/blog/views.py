@@ -214,7 +214,7 @@ class AddCommentView(LoginRequiredMixin, CreateView):
 class EditCommentView(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm
-    template_name = "blog/detail.html"
+    template_name = "blog/create.html"
     
 
     def get_object(self):
@@ -224,13 +224,6 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
             post_id=self.kwargs["post_id"],
             author=self.request.user,
         )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["comments"] = Comment.objects.filter(
-            post_id=self.kwargs["post_id"])
-        context["post"] = get_object_or_404(Post, pk=self.kwargs["post_id"])
-        return context
 
     def form_valid(self, form):
         form.instance.edited_at = timezone.now()
@@ -242,7 +235,7 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
 
 class DeleteCommentView(LoginRequiredMixin, DeleteView):
     model = Comment
-    template_name = "blog/detail.html"
+    template_name = "blog/comment.html"
 
     def get_object(self):
         return get_object_or_404(
@@ -251,13 +244,6 @@ class DeleteCommentView(LoginRequiredMixin, DeleteView):
             post_id=self.kwargs["post_id"],
             author=self.request.user,
         )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["comments"] = Comment.objects.filter(
-            post_id=self.kwargs["post_id"])
-        context["post"] = get_object_or_404(Post, pk=self.kwargs["post_id"])
-        return context
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
