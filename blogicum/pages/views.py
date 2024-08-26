@@ -33,5 +33,3 @@ class Error500View(TemplateView):
 
 class Error403View(TemplateView):
     template_name = "pages/403csrf.html"
-
-
