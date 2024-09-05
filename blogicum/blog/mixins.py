@@ -17,7 +17,8 @@ class PostListMixin:
                 category__is_published=True,
             )
             .annotate(
-                comment_count=Count("comments", filter=Q(comments__is_published=True))
+                comment_count=Count("comments",
+                                    filter=Q(comments__is_published=True))
             )
             .order_by("-pub_date")
             .select_related()

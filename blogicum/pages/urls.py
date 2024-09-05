@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import AboutView, Error403View, Error404View, Error500View, RulesView
+from .views import (
+    AboutView, Error403View, Error404View, Error500View, RulesView)
 
 app_name = "pages"
 

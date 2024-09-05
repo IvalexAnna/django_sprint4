@@ -126,7 +126,8 @@ class DeletePostView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return redirect("blog:post_detail", post_id=self.kwargs["post_id"])
 
     def get_success_url(self):
-        return reverse("blog:profile", kwargs={"username": self.request.user.username})
+        return reverse("blog:profile",
+                       kwargs={"username": self.request.user.username})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -189,7 +190,8 @@ class AddCommentView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("blog:post_detail", kwargs={"post_id": self.kwargs["post_id"]})
+        return reverse("blog:post_detail",
+                       kwargs={"post_id": self.kwargs["post_id"]})
 
 
 class EditCommentView(LoginRequiredMixin, UpdateView):
@@ -206,7 +208,8 @@ class EditCommentView(LoginRequiredMixin, UpdateView):
         )
 
     def get_success_url(self):
-        return reverse("blog:post_detail", kwargs={"post_id": self.kwargs["post_id"]})
+        return reverse("blog:post_detail",
+                       kwargs={"post_id": self.kwargs["post_id"]})
 
 
 class DeleteCommentView(LoginRequiredMixin, DeleteView):
@@ -222,4 +225,5 @@ class DeleteCommentView(LoginRequiredMixin, DeleteView):
         )
 
     def get_success_url(self):
-        return reverse("blog:post_detail", kwargs={"post_id": self.kwargs["post_id"]})
+        return reverse("blog:post_detail",
+                       kwargs={"post_id": self.kwargs["post_id"]})
